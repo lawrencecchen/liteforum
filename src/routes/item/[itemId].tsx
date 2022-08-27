@@ -32,12 +32,12 @@ export default function Item() {
           <hr class="border-t border-neutral-200" />
 
           <section class="max-w-6xl py-2 w-full mx-auto px-4 py-3">
-            <Show when={item?.()}>
+            <Show when={item()}>
               {/* solidjs rip typescript */}
               <LinkItem item={item()!} />
             </Show>
             <div class="mt-4 ml-9">
-              <Show when={item?.()?.id}>
+              <Show when={item()?.id}>
                 {/* solidjs rip typescript */}
                 <CommentForm itemId={item()!.id!} parentPath="" />
               </Show>

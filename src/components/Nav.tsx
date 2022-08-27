@@ -1,25 +1,9 @@
 import { Link } from "@solidjs/router";
-import { createServerAction, redirect } from "solid-start/server";
-import invariant from "tiny-invariant";
-import { db } from "~/lib/db";
+import { createServerAction } from "solid-start/server";
+import { createItem } from "~/lib/crud/items";
 
 export default function Nav() {
-  const createItemAction = createServerAction(async (form: FormData) => {
-    const url = form.get("url");
-    invariant(typeof url === "string");
-    const html = await fetch(url).then((r) => r.text());
-    const title = html.match(/<title>(.*?)<\/title>/)?.[1] ?? url;
-    const { insertId } = await db
-      .insertInto("item")
-      .values({
-        url,
-        html,
-        insertedAt: new Date().toString(),
-        title,
-      })
-      .executeTakeFirstOrThrow();
-    return redirect(`/item/${insertId}`);
-  });
+  const createItemAction = createServerAction(createItem);
   return (
     <nav class="max-w-6xl py-2 w-full mx-auto px-4">
       <createItemAction.Form>

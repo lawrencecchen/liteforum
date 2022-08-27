@@ -1,4 +1,6 @@
 import { sql } from "kysely";
+import { redirect } from "solid-start/server";
+import invariant from "tiny-invariant";
 import { db } from "../db";
 
 export async function getItems() {
@@ -18,4 +20,19 @@ export async function getItem(itemId: number) {
     .executeTakeFirstOrThrow();
 }
 
-// export async function
+export async function createItem(form: FormData) {
+  const url = form.get("url");
+  invariant(typeof url === "string");
+  const html = await fetch(url).then((r) => r.text());
+  const title = html.match(/<title>(.*?)<\/title>/)?.[1] ?? url;
+  const { insertId } = await db
+    .insertInto("item")
+    .values({
+      url,
+      html,
+      insertedAt: new Date().toString(),
+      title,
+    })
+    .executeTakeFirstOrThrow();
+  return redirect(`/item/${insertId}`);
+}
