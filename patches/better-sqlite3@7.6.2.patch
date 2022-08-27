@@ -1,5 +1,5 @@
 diff --git a/lib/database.js b/lib/database.js
-index aea774d37f958df63dc6c86cd1d65704fff9dd4b..ea06baf53111c6f57fc41696294be7b6a37a5746 100644
+index aea774d37f958df63dc6c86cd1d65704fff9dd4b..d37d7bcbdeb16867e3761cf75e013fccd468644b 100644
 --- a/lib/database.js
 +++ b/lib/database.js
 @@ -3,6 +3,9 @@ const fs = require('fs');
@@ -12,15 +12,19 @@ index aea774d37f958df63dc6c86cd1d65704fff9dd4b..ea06baf53111c6f57fc41696294be7b6
  
  let DEFAULT_ADDON;
  
-@@ -47,7 +50,10 @@ function Database(filenameGiven, options) {
+@@ -47,7 +50,14 @@ function Database(filenameGiven, options) {
  	if (nativeBindingPath == null) {
  		addon = DEFAULT_ADDON || (DEFAULT_ADDON = require('bindings')('better_sqlite3.node'));
  	} else {
 -		addon = require(path.resolve(nativeBindingPath).replace(/(\.node)?$/, '.node'));
-+    const module = { exports: {} };
-+    process.dlopen(module, url.fileURLToPath(url.pathToFileURL(nativeBindingPath), import.meta.url), os.constants.dlopen.RTLD_NOW);
-+    addon = module.exports;
-+		// addon = require(path.resolve(nativeBindingPath).replace(/(\.node)?$/, '.node'));
++    try {
++      // very very hack
++      const module = { exports: {} };
++      process.dlopen(module, nativeBindingPath, os.constants.dlopen.RTLD_NOW);
++      addon = module.exports;
++    } catch (e) {
++      addon = require(path.resolve(nativeBindingPath).replace(/(\.node)?$/, '.node'));
++    }
  	}
  	if (!addon.isInitialized) {
  		addon.setErrorConstructor(SqliteError);
