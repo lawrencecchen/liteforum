@@ -1,0 +1,26 @@
+diff --git a/lib/database.js b/lib/database.js
+index aea774d37f958df63dc6c86cd1d65704fff9dd4b..ea06baf53111c6f57fc41696294be7b6a37a5746 100644
+--- a/lib/database.js
++++ b/lib/database.js
+@@ -3,6 +3,9 @@ const fs = require('fs');
+ const path = require('path');
+ const util = require('./util');
+ const SqliteError = require('./sqlite-error');
++const process = require('process')
++const url = require('url');
++const os = require('os');
+ 
+ let DEFAULT_ADDON;
+ 
+@@ -47,7 +50,10 @@ function Database(filenameGiven, options) {
+ 	if (nativeBindingPath == null) {
+ 		addon = DEFAULT_ADDON || (DEFAULT_ADDON = require('bindings')('better_sqlite3.node'));
+ 	} else {
+-		addon = require(path.resolve(nativeBindingPath).replace(/(\.node)?$/, '.node'));
++    const module = { exports: {} };
++    process.dlopen(module, url.fileURLToPath(url.pathToFileURL(nativeBindingPath), import.meta.url), os.constants.dlopen.RTLD_NOW);
++    addon = module.exports;
++		// addon = require(path.resolve(nativeBindingPath).replace(/(\.node)?$/, '.node'));
+ 	}
+ 	if (!addon.isInitialized) {
+ 		addon.setErrorConstructor(SqliteError);

@@ -8,6 +8,7 @@
   },
   "type": "module",
   "devDependencies": {
+    "@originjs/vite-plugin-commonjs": "^1.0.3",
     "@types/better-sqlite3": "^7.6.0",
     "@unocss/reset": "^0.45.13",
     "kysely-codegen": "^0.5.1",
@@ -30,5 +31,16 @@
   },
   "engines": {
     "node": ">=14"
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "allowAny": [
+        "kysely",
+        "solid-js"
+      ]
+    },
+    "patchedDependencies": {
+      "better-sqlite3@7.6.2": "patches/better-sqlite3@7.6.2.patch"
+    }
   }
 }
